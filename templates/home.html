@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="min-h-screen">
+    <!-- Hero Section with Background Image and Typewriter Effect -->
+    <section class="relative h-[600px] flex items-center">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b" alt="Cybersecurity" 
+                 class="w-full h-full object-cover object-center">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-cyan-500/50"></div>
+        </div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="space-y-8">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+                    Secure Network Solutions &<br>
+                    <span id="typewriter" class="bg-gradient-to-r from-cyan-400 to-blue-300 bg-clip-text text-transparent"></span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+                    AI-driven security infrastructure, intelligent threat detection, and next-gen IT solutions
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#contact" class="px-8 py-4 bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-xl hover:scale-105 transition-transform font-semibold shadow-lg shadow-blue-500/30">
+                        Get AI Security Scan →
+                    </a>
+                    <a href="#services" class="px-8 py-4 border-2 border-white/20 text-white rounded-xl hover:bg-white/10 transition-all font-semibold backdrop-blur-sm">
+                        Explore Solutions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Cyber Bullying Reports Section -->
+<!-- Cyber Bullying Reports Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Recent Cyber Safety Reports
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                Anonymous community experiences and support
+            </p>
+        </div>
+
+        <!-- Report Submission Form -->
+        <div class="max-w-3xl mx-auto bg-gray-100 p-6 rounded-lg mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Share Your Experience</h3>
+            <textarea id="report-content" class="w-full p-3 border border-gray-300 rounded-lg" rows="4" placeholder="Write your experience..."></textarea>
+
+            <select id="report-gender" class="w-full p-3 border border-gray-300 rounded-lg mt-3">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+\                <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+
+            <button id="submit-report" class="mt-4 bg-cyan-600 text-white px-6 py-2 rounded-lg hover:bg-cyan-700">
+                Submit Experience
+            </button>
+        </div>
+
+        <!-- Display Reports -->
+        <div id="reports-container" class="grid md:grid-cols-3 gap-8">
+            <!-- Reports will be dynamically inserted here -->
+        </div>
+
+        <div class="text-center mt-6">
+            <a href="/all-reports/" class="text-cyan-600 hover:text-cyan-700 font-medium">
+                Read More Experiences →
+            </a>
+        </div>
+    </div>
+</section><!-- Hidden Report Submission Modal -->
+<div id="report-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+        <h3 class="text-2xl font-bold mb-4">Share Your Experience</h3>
+        <textarea id="reportContent" rows="4" class="w-full border p-3 rounded-lg" placeholder="Describe the incident..."></textarea>
+        <div class="flex justify-end mt-4 space-x-2">
+            <button onclick="closeReportForm()" class="px-4 py-2 border rounded-lg">Cancel</button>
+            <button onclick="submitReport()" class="px-4 py-2 bg-cyan-600 text-white rounded-lg">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const reportsContainer = document.getElementById("reports-container");
+        const submitButton = document.getElementById("submit-report");
+    
+        // Function to fetch and display reports
+        function loadReports() {
+            fetch('/api/reports/')
+                .then(response => response.json())
+                .then(data => {
+                    reportsContainer.innerHTML = ""; // Clear previous content
+                    
+                    let latestReports = data.reports.slice(-3).reverse(); // Get last 3 reports
+                    latestReports.forEach(report => {
+                        addReportToDOM(report);
+                    });
+                })
+                .catch(error => console.error("Error fetching reports:", error));
+        }
+    
+        // Function to add a single report to the DOM
+        function addReportToDOM(report) {
+            let reportCard = `
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="text-gray-600 mb-4">"${report.content}"</p>
+                    <p class="text-gray-500 text-sm">Gender: ${report.gender}</p>
+                    <a href="#" class="text-cyan-600 hover:text-cyan-700 font-medium">
+                        Read Full Experience →
+                    </a>
+                </div>
+            `;
+            reportsContainer.innerHTML = reportCard + reportsContainer.innerHTML; // Prepend new report
+        }
+    
+        // Handle report submission
+        submitButton.addEventListener("click", function() {
+            const content = document.getElementById("report-content").value.trim();
+            const gender = document.getElementById("report-gender").value;
+    
+            if (!content || !gender) {
+                alert("Please enter your experience and select a gender.");
+                return;
+            }
+    
+            fetch('/api/submit-report/', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: content, gender: gender })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    addReportToDOM({ content, gender }); // Immediately display report
+                    document.getElementById("report-content").value = "";
+                    document.getElementById("report-gender").value = "";
+                }
+            })
+            .catch(error => console.error("Error submitting report:", error));
+        });
+    
+        // Load reports on page load
+        loadReports();
+    });
+    </script>
+
+
+
+
+    <!-- AI-Powered Services Section -->
+    <section class="py-20 bg-gradient-to-b from-gray-50 to-white" id="services">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    AI-Enhanced Security Solutions
+                </h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Leveraging machine learning and predictive analytics for proactive protection
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- AI Security Card -->
+                <div class="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all border border-gray-100 group">
+                    <div class="w-14 h-14 bg-cyan-100 rounded-2xl mb-6 flex items-center justify-center">
+                        <svg class="w-7 h-7 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4">AI Threat Intelligence</h3>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-cyan-500 rounded-full"></span>
+                            Predictive threat modeling
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-cyan-500 rounded-full"></span>
+                            Behavioral anomaly detection
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-cyan-500 rounded-full"></span>
+                            Automated response systems
+                        </li>
+                    </ul>
+                    <div class="mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent mb-4"></div>
+                        <p class="text-sm text-gray-500">
+                            Our AI models analyze 1M+ threats daily to predict vulnerabilities
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Other Service Cards with AI Enhancements -->
+                <!-- Add similar card structures for other services with AI features -->
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Risk Assessment Section -->
+    <section class="bg-gradient-to-r from-blue-900 to-cyan-800 text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="bg-white/5 rounded-2xl p-8 backdrop-blur-lg border border-white/10">
+                <h2 class="text-3xl font-bold mb-6">AI-Powered Security Audit</h2>
+                <p class="text-gray-200 mb-8 max-w-xl mx-auto">
+                    Our neural network analyzes your system architecture to predict vulnerabilities
+                </p>
+                <button class="px-8 py-4 bg-cyan-400 hover:bg-cyan-300 text-blue-900 rounded-xl font-semibold transition-all shadow-lg shadow-cyan-400/20">
+                    Start Smart Scan
+                </button>
+                <div class="mt-6 flex justify-center items-center gap-2 text-sm text-cyan-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Powered by DeepGuard™ AI Engine
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Contact Form -->
+    <section class="py-20 bg-gray-50" id="contact">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl shadow-xl p-8 md:p-16">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">
+                        Intelligent Security Consultation
+                    </h2>
+                    <form class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-cyan-400 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-cyan-400 focus:border-transparent">
+                            </div>
+                        </div>
+                        <!-- Add more form fields -->
+                        <button class="w-full py-4 bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-xl font-semibold hover:scale-[1.02] transition-transform shadow-lg">
+                            Request AI Analysis →
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Typewriter Effect
+    document.addEventListener('DOMContentLoaded', function() {
+        const words = ["Cyber Resilience", "AI Defense Systems", "Cloud Security", "Threat Prevention"];
+        let i = 0;
+        let offset = 0;
+        let forwards = true;
+        const typewriter = document.getElementById('typewriter');
+        
+        function animate() {
+            if (forwards) {
+                if (offset >= words[i].length) {
+                    forwards = false;
+                    setTimeout(animate, 2000);
+                    return;
+                }
+            } else {
+                if (offset === 0) {
+                    forwards = true;
+                    i = (i + 1) % words.length;
+                }
+            }
+            
+            typewriter.textContent = words[i].substring(0, offset);
+            
+            if (forwards) {
+                offset++;
+            } else {
+                offset--;
+            }
+            
+            setTimeout(animate, forwards ? 100 : 30);
+        }
+        animate();
+    });
+</script>
+{% endblock %}

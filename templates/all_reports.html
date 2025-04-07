@@ -1,0 +1,23 @@
+<!-- all_reports.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Reports</title>
+</head>
+<body>
+    <h1>All Cyber Bullying Reports</h1>
+
+    <div id="reports-container">
+        {% for report in reports %}
+            <div class="report-card">
+                <p><strong>Gender:</strong> {{ report.gender }}</p>
+                <p><strong>Experience:</strong> "{{ report.content }}"</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Cybersecurity Page -->
+<main class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <!-- Password Management Section -->
+    <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Secure Password Practices
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                Protect your digital identity with strong authentication practices
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12 items-start">
+            <!-- Password Guidelines -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                <h3 class="text-2xl font-semibold mb-6">Creating Strong Passwords</h3>
+                <ul class="space-y-4 text-gray-600">
+                    <li class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center">✓</div>
+                        Use at least 12 characters with mix of upper/lowercase, numbers & symbols
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center">✓</div>
+                        Avoid personal information or common phrases
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center">✓</div>
+                        Use unique passwords for different accounts
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Password Strength Game -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-semibold mb-4">Password Strength Trainer</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm font-medium">Security Score:</span>
+                        <span id="scoreValue" class="text-2xl font-bold text-cyan-600">0</span>
+                    </div>
+                    <input type="text" id="passwordInput" 
+                           class="w-full px-4 py-3 border border-gray-200 rounded-lg mb-4" 
+                           placeholder="Type your password here">
+                    <div class="h-2 bg-gray-100 rounded-full mb-4">
+                        <div id="strengthMeter" class="h-2 rounded-full transition-all duration-300"></div>
+                    </div>
+                    <div id="passwordFeedback" class="text-sm text-gray-600"></div>
+                </div>
+                <button onclick="generatePassword()" class="text-cyan-600 hover:text-cyan-700 font-medium">
+                    Generate Strong Password →
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cyber Bullying Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Combating Cyber Bullying
+                </h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Recognize, report, and prevent online harassment
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Recognition Guide -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-semibold mb-6">Identifying Cyber Bullying</h3>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center">!</div>
+                            Repeated harmful messages or posts
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center">!</div>
+                            Spreading false information or rumors
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center">!</div>
+                            Exclusion from online groups/activities
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Anonymous Report Form -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-semibold mb-6">Anonymous Report</h3>
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Incident Description</label>
+                            <textarea rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-lg" 
+                                      placeholder="Describe what happened (no personal details required)"></textarea>
+                        </div>
+                        <button class="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">
+                            Submit Anonymously
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Password Game Script -->
+<script>
+    const passwordInput = document.getElementById('passwordInput');
+    const strengthMeter = document.getElementById('strengthMeter');
+    const scoreValue = document.getElementById('scoreValue');
+    const feedback = document.getElementById('passwordFeedback');
+
+    passwordInput.addEventListener('input', updateStrength);
+
+    function updateStrength() {
+        const password = passwordInput.value;
+        let score = 0;
+        
+        // Scoring criteria
+        if (password.length >= 12) score += 2;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        if (!/(password|123)/i.test(password)) score++;
+        
+        // Update display
+        const strength = Math.min(score * 20, 100);
+        strengthMeter.style.width = strength + '%';
+        strengthMeter.style.backgroundColor = getColor(strength);
+        scoreValue.textContent = strength;
+        
+        // Feedback
+        feedback.innerHTML = getFeedback(password, strength);
+    }
+
+    function getColor(strength) {
+        if (strength < 40) return '#ef4444';
+        if (strength < 70) return '#eab308';
+        return '#22c55e';
+    }
+
+    function getFeedback(password, strength) {
+        let advice = [];
+        if (password.length < 12) advice.push("↠ Longer than 12 characters");
+        if (!/[A-Z]/.test(password)) advice.push("↠ Add uppercase letters");
+        if (!/[0-9]/.test(password)) advice.push("↠ Include numbers");
+        if (!/[^A-Za-z0-9]/.test(password)) advice.push("↠ Add special characters");
+        if (/(password|123)/i.test(password)) advice.push("↠ Avoid common phrases");
+        
+        return strength < 100 ? advice.join('<br>') : '🎉 Excellent password security!';
+    }
+
+    function generatePassword() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+        let password = '';
+        for (let i = 0; i < 14; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        passwordInput.value = password;
+        updateStrength();
+    }
+</script>
+{% endblock %}
