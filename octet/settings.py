@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,13 @@ SECRET_KEY = 'django-insecure-)5!bqmdnv)gp+x=h2el9l@6p_e+i7a^c#f8p7fsx3(yp32h(+@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://octet-7gga.onrender.com', 'localhost', '127.0.0.1']
-
+# Remove protocol from URL and add wildcard
+ALLOWED_HOSTS = [
+    'octet-q4dz.onrender.com',  # Removed https://
+    'localhost',
+    '127.0.0.1',
+    '::1'  # IPv6 localhost
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +45,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -73,10 +81,11 @@ WSGI_APPLICATION = 'octet.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 
@@ -127,8 +136,15 @@ INSTALLED_APPS.append('main')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+# Security
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] if os.path.exists(os.path.join(BASE_DIR, 'static')) else []
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'templates'))
+TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'templates')]
